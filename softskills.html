@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Build workplace soft skills through practical exercises and self-assessment.">
+  <title>Soft Skills | Professional Level</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="soft-skills-page">
+  <header class="site-header"><nav class="navbar container" aria-label="Main navigation">
+    <a class="brand" href="index.html"><span class="brand-mark">PL</span><span>Professional Level</span></a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Open navigation menu</span><i></i><i></i><i></i></button>
+    <div class="nav-links" id="nav-links"><a href="index.html">Home</a><a href="dashboard.html">Dashboard</a><a href="roadmap.html">Tech</a><a class="active" href="softskills.html" aria-current="page">Soft Skills</a><a href="networking.html">Networking</a><a href="dashboard.html">Progress</a></div>
+  </nav></header>
+  <main class="soft-skills-main"><div class="container">
+    <section class="soft-hero">
+      <div><p class="eyebrow">YOUR PROFESSIONAL GROWTH</p><h1>Soft Skills Journey</h1><p>Build the habits that help you communicate, work with others, solve problems, and navigate the workplace. Choose a domain, try a practical exercise, and check in with yourself at your own pace.</p><p class="soft-self-paced"><span aria-hidden="true">◎</span> The path is yours. Practice when it works for you.</p></div>
+      <aside class="soft-hero-note"><span class="soft-note-icon" aria-hidden="true">✦</span><strong>Progress through practice</strong><p>There is no fixed schedule. Your self-assessment is a reflection point, not a grade.</p></aside>
+    </section>
+    <section class="soft-progress-section" aria-labelledby="soft-progress-heading">
+      <div class="soft-section-heading"><div><p class="eyebrow">YOUR CHECK-IN</p><h2 id="soft-progress-heading">Soft Skills Progress</h2></div><p>Update any skill level as you grow.</p></div>
+      <div class="soft-metrics" aria-live="polite">
+        <article class="soft-metric soft-metric-overall"><span class="soft-metric-icon" aria-hidden="true">↗</span><div><small>OVERALL PROGRESS</small><strong id="soft-overall">0%</strong><div class="soft-meter" role="progressbar" aria-label="Overall soft skills progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="soft-meter-fill"></i></div></div></article>
+        <article class="soft-metric"><span class="soft-metric-icon" aria-hidden="true">◎</span><div><small>DOMAINS STARTED</small><strong id="soft-domains-started">0 of 10</strong></div></article>
+        <article class="soft-metric"><span class="soft-metric-icon" aria-hidden="true">↗</span><div><small>DEVELOPING / STRONG</small><strong id="soft-developing">0</strong></div></article>
+        <article class="soft-metric"><span class="soft-metric-icon" aria-hidden="true">✓</span><div><small>STRONG SKILLS</small><strong id="soft-strong">0</strong></div></article>
+      </div>
+      <p class="soft-progress-note" id="soft-progress-note">Your ratings are saved on this device and are separate from your technical roadmap.</p>
+    </section>
+    <section class="soft-domains-section" aria-labelledby="soft-domains-heading">
+      <div class="soft-section-heading"><div><p class="eyebrow">PICK UP WHERE YOU ARE</p><h2 id="soft-domains-heading">Explore Professional Domains</h2></div><p>Open a domain to explore its skills and practice ideas.</p></div>
+      <div class="soft-domain-list" id="soft-domain-list"></div>
+    </section>
+  </div></main>
+  <footer class="site-footer"><div class="container footer-content"><p>Professional Level Ecosystem for Students</p><p>© 2026 Professional Level. All rights reserved.</p></div></footer>
+  <script src="js/app.js"></script><script src="js/softskills.js"></script>
+</body>
+</html>

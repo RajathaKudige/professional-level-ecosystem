@@ -110,7 +110,12 @@ if (dashboardPage) {
   } else {
     const defaultCareerProgress = { technical: null, softSkills: null, networking: null };
     const targetRole = studentProfile.targetRole || "Full-Stack Developer";
-    const defaultRoadmapProgress = { completed: 0, total: 10 };
+    const selectedRoadmap = window.roadmapData?.[targetRole];
+    const hasSelectedRoadmap = Boolean(selectedRoadmap && Array.isArray(selectedRoadmap.stages) && selectedRoadmap.stages.every((stage) => stage && Array.isArray(stage.skills)));
+    const selectedRoadmapTotal = hasSelectedRoadmap
+      ? selectedRoadmap.stages.reduce((total, stage) => total + stage.skills.length + 1, 0)
+      : null;
+    const defaultRoadmapProgress = { completed: 0, total: selectedRoadmapTotal === null ? 10 : selectedRoadmapTotal };
     const storedCareerProgress = JSON.parse(localStorage.getItem("careerProgress"));
     const isOldPlaceholderData = storedCareerProgress && storedCareerProgress.technical === 35 && storedCareerProgress.softSkills === 25 && storedCareerProgress.networking === 20;
     const careerProgress = isOldPlaceholderData ? defaultCareerProgress : { ...defaultCareerProgress, ...storedCareerProgress };
@@ -124,18 +129,44 @@ if (dashboardPage) {
     localStorage.setItem("careerProgress", JSON.stringify(careerProgress));
     localStorage.setItem("roadmapProgress", JSON.stringify(roadmapProgressByRole));
 
+    const getRoleStatuses = (key) => {
+      const stored = JSON.parse(localStorage.getItem(key)) || {};
+      const isRoleScoped = Object.values(stored).some((value) => value && typeof value === "object" && !Array.isArray(value));
+      if (isRoleScoped) return stored[targetRole] || {};
+      return targetRole === "Full-Stack Developer" ? stored : {};
+    };
+    const skillStatuses = getRoleStatuses("roadmapSkillStatus");
+    const missionStatuses = getRoleStatuses("roadmapMissionStatus");
+
     const getPercentage = (value) => {
       if (value === null || value === undefined || value === "") return null;
       return Math.max(0, Math.min(100, Number(value) || 0));
     };
     const technical = getPercentage(careerProgress.technical);
-    const softSkills = getPercentage(careerProgress.softSkills);
-    const networking = getPercentage(careerProgress.networking);
+    const savedSoftSkills = JSON.parse(localStorage.getItem("softSkillsProgress") || "{}") || {};
+    const softSkillLevels = savedSoftSkills && savedSoftSkills.levels && typeof savedSoftSkills.levels === "object" ? Object.values(savedSoftSkills.levels) : [];
+    const softSkillWeights = { "Not Started": 0, Beginner: 1, Developing: 2, Strong: 3 };
+    const assessedSoftSkillLevels = softSkillLevels.filter((level) => Object.prototype.hasOwnProperty.call(softSkillWeights, level));
+    const savedSoftSkillTotal = Math.max(1, Number(savedSoftSkills.totalSkills) || 50);
+    const hasSoftSkillRatings = assessedSoftSkillLevels.some((level) => level !== "Not Started");
+    const softSkills = hasSoftSkillRatings
+      ? Math.round(assessedSoftSkillLevels.reduce((total, level) => total + softSkillWeights[level], 0) / (savedSoftSkillTotal * 3) * 100)
+      : getPercentage(careerProgress.softSkills);
+    const savedNetworkingProgress = JSON.parse(localStorage.getItem("networkingProgress") || "null");
+    const networking = getPercentage(savedNetworkingProgress?.progress ?? careerProgress.networking);
     const assessedAreas = [technical, softSkills, networking].filter((value) => value !== null);
     const overall = assessedAreas.length ? Math.round(assessedAreas.reduce((total, value) => total + value, 0) / assessedAreas.length) : null;
-    const roadmapTotal = Math.max(1, Number(roadmapProgress.total) || 10);
+    const roadmapTotal = selectedRoadmapTotal === null
+      ? Math.max(1, Number(roadmapProgress.total) || 10)
+      : Math.max(1, selectedRoadmapTotal);
     const roadmapCompleted = Math.max(0, Math.min(roadmapTotal, Number(roadmapProgress.completed) || 0));
     const roadmapPercent = Math.round((roadmapCompleted / roadmapTotal) * 100);
+    const allRoadmapSkills = hasSelectedRoadmap ? selectedRoadmap.stages.flatMap((stage) => stage.skills) : [];
+    const completedSkills = allRoadmapSkills.filter((skill) => skillStatuses[skill.id] === "Completed").length;
+    const totalMissions = hasSelectedRoadmap ? selectedRoadmap.stages.length : 0;
+    const completedMissions = hasSelectedRoadmap
+      ? selectedRoadmap.stages.filter((stage) => missionStatuses[stage.title]).length
+      : 0;
 
     const setText = (id, value) => { document.querySelector(id).textContent = value || "—"; };
     const setReadinessArea = (barId, valueId, hintId, value, emptyLabel, emptyHint) => {
@@ -164,10 +195,13 @@ if (dashboardPage) {
     document.querySelector("#overall-ring").style.borderRightColor = overall === null ? "#dfe8ff" : "var(--blue)";
     setReadinessArea("#technical-bar", "#technical-value", "#technical-hint", technical, "Not assessed", "Complete your technical assessment");
     setReadinessArea("#soft-skills-bar", "#soft-skills-value", "#soft-skills-hint", softSkills, "Not assessed", "Complete your soft skills assessment");
+    if (softSkills !== null) setText("#soft-skills-hint", hasSoftSkillRatings ? "Based on your skill ratings" : "Saved progress estimate");
     setReadinessArea("#networking-bar", "#networking-value", "#networking-hint", networking, "Getting started", "Begin your networking journey");
+    if (networking !== null && savedNetworkingProgress && Array.isArray(savedNetworkingProgress.milestones)) setText("#networking-hint", `${savedNetworkingProgress.milestones.length} of 8 networking milestones`);
     setText("#roadmap-role", studentProfile.targetRole || "Your");
-    setText("#roadmap-count", `${roadmapCompleted} of ${roadmapTotal} skills completed`);
-    setText("#roadmap-percent", `${roadmapPercent}%`);
+    setText("#roadmap-skills-count", hasSelectedRoadmap ? `Skills completed: ${completedSkills} of ${allRoadmapSkills.length}` : "Skills completed: —");
+    setText("#roadmap-missions-count", hasSelectedRoadmap ? `Missions completed: ${completedMissions} of ${totalMissions}` : "Missions completed: —");
+    setText("#roadmap-percent", `Overall progress: ${roadmapPercent}%`);
     document.querySelector("#roadmap-bar").style.width = `${roadmapPercent}%`;
   }
 }

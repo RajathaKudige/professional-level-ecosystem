@@ -1,4 +1,53 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A personalized Professional Level career roadmap."><title>Career Roadmap | Professional Level</title><link rel="stylesheet" href="css/style.css"></head>
-<body class="roadmap-page"><header class="site-header"><nav class="navbar container" aria-label="Main navigation"><a class="brand" href="index.html"><span class="brand-mark">PL</span><span>Professional Level</span></a><button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Open navigation menu</span><i></i><i></i><i></i></button><div class="nav-links" id="nav-links"><a href="index.html">Home</a><a href="dashboard.html">Dashboard</a><a class="active" href="roadmap.html">Tech</a><a href="softskills.html">Soft Skills</a><a href="networking.html">Networking</a><a href="progress.html">Progress</a></div></nav></header>
-  <main class="roadmap-main"><div class="container"><section class="roadmap-hero"><div><p class="eyebrow">PERSONALIZED LEARNING PATH</p><h1>Your Career Roadmap</h1><h2 id="roadmap-title">Loading your roadmap…</h2><p id="roadmap-description">Your guided path will appear here.</p><p class="roadmap-note">This roadmap adapts as you complete assessments and learning activities.</p></div><div class="roadmap-overview"><span>ROADMAP PROGRESS</span><strong id="roadmap-progress-value">Not started</strong><div class="progress-bar"><i id="roadmap-progress-bar"></i></div><small id="roadmap-progress-count">0 completed items</small></div></section><section class="roadmap-summary" aria-label="Roadmap summary"><article class="summary-card summary-completed"><span class="summary-icon" aria-hidden="true">✓</span><div><span class="summary-label">COMPLETED SKILLS</span><strong id="completed-skills">0</strong></div></article><article class="summary-card summary-remaining"><span class="summary-icon" aria-hidden="true">↗</span><div><span class="summary-label">REMAINING SKILLS</span><strong id="remaining-skills">0</strong></div></article><article class="summary-card summary-stage"><span class="summary-icon" aria-hidden="true">◎</span><div><span class="summary-label">CURRENT STAGE</span><strong id="current-stage">—</strong></div></article><article class="summary-card summary-next"><span class="summary-icon" aria-hidden="true">→</span><div><span class="summary-label">NEXT RECOMMENDED ACTION</span><strong id="next-action">—</strong></div></article></section><p id="roadmap-message" class="roadmap-message" role="status"></p><section id="roadmap-stages" class="roadmap-stages" aria-label="Career roadmap stages"></section></div></main><footer class="site-footer"><div class="container footer-content"><p>Professional Level Ecosystem for Students</p><p>© 2026 Professional Level. All rights reserved.</p></div></footer><script src="js/roadmaps.js"></script><script src="js/app.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Your personalized Professional Level career roadmap.">
+  <title>Career Roadmap | Professional Level</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="roadmap-page">
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Main navigation">
+      <a class="brand" href="index.html"><span class="brand-mark">PL</span><span>Professional Level</span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Open navigation menu</span><i></i><i></i><i></i></button>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html">Home</a><a href="dashboard.html">Dashboard</a><a class="active" href="roadmap.html">Tech</a><a href="softskills.html">Soft Skills</a><a href="networking.html">Networking</a><a href="dashboard.html">Progress</a>
+      </div>
+    </nav>
+  </header>
+  <main class="roadmap-main">
+    <div class="container">
+      <section class="roadmap-hero" aria-labelledby="roadmap-page-title">
+        <div class="roadmap-hero-copy">
+          <p class="eyebrow">YOUR PROFESSIONAL JOURNEY</p>
+          <h1 id="roadmap-page-title">Your Career Roadmap</h1>
+          <p class="target-role-label">YOUR TARGET ROLE</p>
+          <h2 id="roadmap-title">Loading your roadmap…</h2>
+          <p id="roadmap-description">Your guided path will appear here.</p>
+          <div class="journey-flow" aria-label="Journey flow"><span>ASSESS</span><i>→</i><span>LEARN</span><i>→</i><span>PRACTICE</span><i>→</i><span>BUILD</span><i>→</i><span>MOVE FORWARD</span></div>
+        </div>
+        <div class="roadmap-overview">
+          <div class="overview-heading"><span>ROADMAP PROGRESS</span><strong id="roadmap-progress-value">Not started</strong></div>
+          <div class="progress-bar" role="progressbar" aria-label="Roadmap progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="roadmap-progress-bar"></i></div>
+          <small id="roadmap-progress-count">0 completed items</small>
+        </div>
+      </section>
+      <section class="roadmap-summary" aria-label="Roadmap summary">
+        <article class="summary-card summary-completed"><span class="summary-icon" aria-hidden="true">✓</span><div><span class="summary-label">COMPLETED SKILLS</span><strong id="completed-skills">0</strong></div></article>
+        <article class="summary-card summary-remaining"><span class="summary-icon" aria-hidden="true">↗</span><div><span class="summary-label">REMAINING SKILLS</span><strong id="remaining-skills">0</strong></div></article>
+        <article class="summary-card summary-stage"><span class="summary-icon" aria-hidden="true">◎</span><div><span class="summary-label">CURRENT STAGE</span><strong id="current-stage">—</strong></div></article>
+        <article class="summary-card summary-next"><span class="summary-icon" aria-hidden="true">→</span><div><span class="summary-label">NEXT RECOMMENDED ACTION</span><strong id="next-action">—</strong></div></article>
+      </section>
+      <div class="journey-section-heading"><div><p class="eyebrow">YOUR MILESTONES</p><h2>One step at a time</h2></div><p>Learn a skill, put it into practice, then complete each mission to move forward.</p></div>
+      <p id="roadmap-message" class="roadmap-message" role="status" aria-live="polite"></p>
+      <section id="roadmap-stages" class="roadmap-stages" aria-label="Career journey stages"></section>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="container footer-content"><p>Professional Level Ecosystem for Students</p><p>© 2026 Professional Level. All rights reserved.</p></div></footer>
+  <script src="js/roadmap-data.js"></script>
+  <script src="js/roadmaps.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
