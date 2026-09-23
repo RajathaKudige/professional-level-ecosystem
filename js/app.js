@@ -33,8 +33,8 @@ if (onboardingForm) {
       "Mobile App Development": ["Android Developer", "iOS Developer", "Flutter Developer", "React Native Developer", "Mobile App Developer"],
       "AI & Machine Learning": ["AI Engineer", "Machine Learning Engineer", "AI/ML Engineer", "Deep Learning Engineer", "Generative AI Engineer", "NLP Engineer", "Computer Vision Engineer", "AI Research Engineer"],
       "Data Engineering & Analytics": ["Data Analyst", "Data Scientist", "Data Engineer", "Analytics Engineer", "BI Analyst", "BI Developer", "Data Architect"],
-      Cybersecurity: ["Cybersecurity Analyst", "Security Analyst", "Security Engineer", "SOC Analyst", "Penetration Tester", "Ethical Hacker", "Application Security Engineer", "Cloud Security Engineer", "Security Architect", "Digital Forensics Analyst"],
-      "Cloud & DevOps": ["Cloud Engineer", "Cloud Architect", "Cloud Developer", "DevOps Engineer", "DevSecOps Engineer", "Site Reliability Engineer", "Platform Engineer", "Infrastructure Engineer"],
+      Cybersecurity: ["Cybersecurity Analyst", "Cybersecurity Engineer", "Security Analyst", "Security Engineer", "SOC Analyst", "Penetration Tester", "Ethical Hacker", "Application Security Engineer", "Cloud Security Engineer", "Security Architect", "Digital Forensics Analyst"],
+      "Cloud & DevOps": ["Cloud / DevOps Engineer", "Cloud Engineer", "Cloud Architect", "Cloud Developer", "DevOps Engineer", "DevSecOps Engineer", "Site Reliability Engineer", "Platform Engineer", "Infrastructure Engineer"],
       "Networking & Infrastructure": ["Network Engineer", "Network Administrator", "Network Architect", "Systems Administrator", "Systems Engineer", "IT Support Engineer"],
       "Blockchain & Web3": ["Blockchain Developer", "Blockchain Engineer", "Smart Contract Developer", "Web3 Developer", "Solidity Developer"],
       "Game Development": ["Game Developer", "Game Programmer", "Unity Developer", "Unreal Engine Developer", "Gameplay Programmer"],
@@ -109,15 +109,20 @@ if (dashboardPage) {
     window.location.href = "onboarding.html";
   } else {
     const defaultCareerProgress = { technical: null, softSkills: null, networking: null };
+    const targetRole = studentProfile.targetRole || "Full-Stack Developer";
     const defaultRoadmapProgress = { completed: 0, total: 10 };
     const storedCareerProgress = JSON.parse(localStorage.getItem("careerProgress"));
     const isOldPlaceholderData = storedCareerProgress && storedCareerProgress.technical === 35 && storedCareerProgress.softSkills === 25 && storedCareerProgress.networking === 20;
     const careerProgress = isOldPlaceholderData ? defaultCareerProgress : { ...defaultCareerProgress, ...storedCareerProgress };
-    const roadmapProgress = JSON.parse(localStorage.getItem("roadmapProgress")) || defaultRoadmapProgress;
+    const storedRoadmapProgress = JSON.parse(localStorage.getItem("roadmapProgress")) || {};
+    const roadmapProgressByRole = Object.prototype.hasOwnProperty.call(storedRoadmapProgress, "completed") || Object.prototype.hasOwnProperty.call(storedRoadmapProgress, "total")
+      ? { "Full-Stack Developer": storedRoadmapProgress }
+      : storedRoadmapProgress;
+    const roadmapProgress = roadmapProgressByRole[targetRole] || defaultRoadmapProgress;
 
     // Save defaults once, so future pages can update the same progress values.
     localStorage.setItem("careerProgress", JSON.stringify(careerProgress));
-    localStorage.setItem("roadmapProgress", JSON.stringify(roadmapProgress));
+    localStorage.setItem("roadmapProgress", JSON.stringify(roadmapProgressByRole));
 
     const getPercentage = (value) => {
       if (value === null || value === undefined || value === "") return null;
