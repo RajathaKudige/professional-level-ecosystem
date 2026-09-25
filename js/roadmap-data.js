@@ -1,4 +1,4 @@
-// Roadmap data lives here so new roles can be added without creating new pages.
+// Roadmap data lives here so the new roles can be added without creating new pages.
 window.roadmapData = (() => {
 const resource = (name, url, type, description) => ({ title: name, name, url, ...(type ? { type } : {}), ...(description ? { description } : {}) });
 const skill = (id, title, what, how, practice, resources) => ({ id, title, what, how, practice, resources });
