@@ -110,7 +110,7 @@ const makeEightStageRoadmap = (role, description, prefix, rows) => makeCareerRoa
 );
 
 // Batch 5 role curricula use the same renderer-facing stage, mission, skill,
-// and resource schema as the established roadmaps.
+// and resource schema as the established roadmaps
 const makeBatch5Roadmap = (role, description, prefix, rows) => ({
   title: `${role} Roadmap`, description,
   stages: rows.map(([stageTitle, missionTitle, focus, skills], index) => ({
