@@ -45,7 +45,8 @@ if (onboardingForm) {
     Data: { "Data Analytics": ["Data Analyst"], "Data Science": ["Data Scientist"], "Data Engineering": ["Data Engineer", "Analytics Engineer", "Data Architect"], "Business Intelligence": ["BI Analyst", "BI Developer"] },
     Design: { "UI/UX Design": ["UI Designer", "UX Designer", "UX Researcher", "Interaction Designer"], "Visual Design": ["Visual Designer"], "Product Design": ["Product Designer", "Design Systems Designer"] },
     Product: { "Product Management": ["Product Manager", "Product Owner"] },
-    Marketing: { "Digital Marketing": ["Digital Marketing Specialist", "SEO Specialist"], "Content Marketing": ["Content Strategist"], "Growth Marketing": ["Growth Marketer", "Social Media Manager"], "Brand Marketing": ["Brand Manager"] }
+    Marketing: { "Digital Marketing": ["Digital Marketing Specialist", "SEO Specialist"], "Content Marketing": ["Content Strategist"], "Growth Marketing": ["Growth Marketer", "Social Media Manager"], "Brand Marketing": ["Brand Manager"] },
+    "Business & Operations": { "Business Analysis & Consulting": ["Business Analyst", "Business Consultant"], "Operations Management": ["Operations Analyst"], Sales: ["Sales Executive"], "Business Development": ["Business Development Executive"] }
   };
   window.careersByDomain = careersByDomain;
 
