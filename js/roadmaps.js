@@ -24,7 +24,7 @@ if (roadmapPage) {
       }
       return scoped;
     };
-    const skillStateByRole = readRoleScopedState("roadmapSkillStatus");
+    const skillStateByRole = window.roadmapProgress.readSkillStatusesByRole();
     const missionStateByRole = readRoleScopedState("roadmapMissionStatus");
     const progressByRole = (() => {
       const stored = JSON.parse(localStorage.getItem("roadmapProgress")) || {};

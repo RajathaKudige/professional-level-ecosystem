@@ -1,0 +1,7 @@
+{
+  "name": "professional-level-ecosystem",
+  "private": true,
+  "scripts": {
+    "validate:roadmaps": "node scripts/validate-roadmaps.js"
+  }
+}

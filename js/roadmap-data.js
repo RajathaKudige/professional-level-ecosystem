@@ -2,6 +2,14 @@
 window.roadmapData = (() => {
 const resource = (name, url, type, description) => ({ title: name, name, url, ...(type ? { type } : {}), ...(description ? { description } : {}) });
 const skill = (id, title, what, how, practice, resources) => ({ id, title, what, how, practice, resources });
+const combineSkills = (items) => ({
+  id: items.map((item) => item.id).join("-and-"),
+  title: items.map((item) => item.title).join(" & "),
+  what: items.map((item) => item.what).join(" "),
+  how: items.map((item) => item.how).join(" "),
+  practice: items.map((item) => item.practice).join(" "),
+  resources: [...new Map(items.flatMap((item) => item.resources || []).map((entry) => [entry.url, entry])).values()]
+});
 
 const webResources = [resource("MDN Web Docs", "https://developer.mozilla.org/"), resource("freeCodeCamp", "https://www.freecodecamp.org/")];
 const gitResources = [resource("Pro Git Book", "https://git-scm.com/book/en/v2"), resource("GitHub Skills", "https://skills.github.com/")];
@@ -64,6 +72,26 @@ const roadmaps = {
   }
 };
 
+// Keep the original full-stack curriculum's concepts while grouping related
+// topics into the three-skill stage structure used by every roadmap.
+const fullStackSkillGroups = [
+  [[0, 1], [2, 3], [4]],
+  [[0, 1, 2], [3, 4, 5], [6, 7]],
+  [[0, 1], [2, 3], [4, 5]],
+  [[0, 1, 2], [3, 4], [5, 6, 7]],
+  [[0, 1, 2], [3, 4, 7], [5, 6, 8]],
+  [[0, 1, 2], [3, 4], [5, 6]],
+  [[0, 1, 2], [3, 4, 7], [5, 6]]
+];
+roadmaps["Full-Stack Developer"].stages.forEach((stage, index) => {
+  if (fullStackSkillGroups[index]) stage.skills = fullStackSkillGroups[index].map((group) => combineSkills(group.map((skillIndex) => stage.skills[skillIndex])));
+});
+roadmaps["Full-Stack Developer"].stages[7].skills = [
+  skill("fullstack-capstone-architecture", "Capstone Architecture and Data Design", "Plan the application boundaries, data model, user flows, and API contracts for the selected problem.", "Document key decisions and validate the model against the intended user journeys.", "Publish an architecture diagram, schema, and API outline.", [...webResources, ...backendResources, ...databaseResources]),
+  skill("fullstack-capstone-implementation", "Capstone Integrated Implementation", "Build and connect the frontend, backend, and database into a coherent application with appropriate validation and security.", "Implement one vertical user journey at a time and verify each layer as it is connected.", "Deliver a working end-to-end application with meaningful error and loading states.", [...reactResources, ...backendResources, ...databaseResources]),
+  skill("fullstack-capstone-release", "Capstone Testing, Deployment, and Handoff", "Verify the application, publish a deployment, and document setup, limitations, and operational decisions.", "Use repeatable checks and ask another person to follow the setup and usage instructions.", "Publish a portfolio-ready application with source, tests, deployment, and a concise project walkthrough.", professionalResources)
+];
+
 // Additional beginner-to-professional role curricula. The helpers below build
 // the same stage, mission, and skill objects consumed by the existing renderer.
 const makeRoleRoadmap = (title, description, prefix, stageRows) => ({
@@ -90,12 +118,17 @@ const makeCareerRoadmap = (role, description, prefix, stages) => makeRoleRoadmap
   `${role} Roadmap`, description, prefix,
   stages.map(([stage, mission, missionDescription, why, tasks, skills]) => [
     stage, mission, missionDescription, why, tasks,
-    skills.map(([id, title, what, resourceName, url, practice]) => [
-      id, title, what, practice,
-      resourceName, url,
-      `Study ${title.toLowerCase()} in the linked free resource, take concise notes, then apply one concept at a time in a small lab or project.`,
-      "Documentation"
-    ])
+    skills.map((row) => {
+      const [id, title, what, resourceName, url, practice] = prefix === "android" || prefix === "ios"
+        ? [row[0], row[1], row[2], row[4], row[5], row[3]]
+        : row;
+      return [
+        id, title, what, practice,
+        resourceName, url,
+        `Study ${title.toLowerCase()} in the linked free resource, take concise notes, then apply one concept at a time in a small lab or project.`,
+        "Documentation"
+      ];
+    })
   ])
 );
 const makeEightStageRoadmap = (role, description, prefix, rows) => makeCareerRoadmap(
@@ -219,7 +252,7 @@ const batch5Roles = {
     ["Infrastructure Integration","Integrate infrastructure components","Plan system interfaces across compute, network, identity, and data.",[["integration","System Integration","Define component contracts and integration sequence.","NASA systems engineering","https://www.nasa.gov/reference/systems-engineering-handbook/","documentation"],["network","Infrastructure Interfaces","Map network, identity, and storage dependencies.","Azure architecture center","https://learn.microsoft.com/en-us/azure/architecture/","documentation"],["verification","Integration Verification","Plan checks that demonstrate interfaces work together.","Postman API Integration Testing","https://learning.postman.com/docs/tests-and-scripts/test-apis/integration-testing","practice"]]],
     ["Automation and Scripting","Automate a system integration task","Use scripts and configuration automation for repeatable system work.",[["scripting","Engineering Scripting","Write scripts that validate inputs and report results.","Python tutorial","https://docs.python.org/3/tutorial/","documentation"],["automation","Configuration Automation","Automate repeatable configuration and integration steps.","Ansible playbooks","https://docs.ansible.com/ansible/latest/playbook_guide/","documentation"],["version","Versioned Engineering Changes","Track automation and design changes for review.","Pro Git book","https://git-scm.com/book/en/v2","documentation"]]],
     ["Capacity and Performance","Assess system capacity and bottlenecks","Measure performance and plan for workload growth.",[["performance","Performance Analysis","Identify latency and resource bottlenecks with evidence.","Brendan Gregg systems performance","https://www.brendangregg.com/linuxperf.html","article"],["capacity","Capacity Planning","Estimate demand, headroom, and growth scenarios.","Red Hat capacity planning","https://www.redhat.com/en/topics/automation/what-is-capacity-planning","article"],["load","Load and Scaling Tests","Use controlled test workloads to validate assumptions.","k6 documentation","https://grafana.com/docs/k6/latest/","tool"]]],
-    ["Reliability and Lifecycle Engineering","Plan reliable system operation","Design reliability, maintenance, and lifecycle transitions.",[["reliability","Reliability Design","Identify failure modes and recovery mechanisms.","Google SRE book","https://sre.google/sre-book/table-of-contents/","documentation"],["lifecycle","Lifecycle Management","Plan upgrades, support windows, and retirement.","NIST systems engineering","https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final","documentation"],["recovery","Recovery Engineering","Define recovery objectives and test system restoration.","NIST contingency planning","https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final","documentation"]]],
+    ["Reliability and Lifecycle Engineering","Plan reliable system operation","Design reliability, maintenance, and lifecycle transitions.",[["reliability","Reliability Design","Identify failure modes and recovery mechanisms.","Google SRE book","https://sre.google/sre-book/table-of-contents/","documentation"],["lifecycle-management","Lifecycle Management","Plan upgrades, support windows, and retirement.","NIST systems engineering","https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final","documentation"],["recovery","Recovery Engineering","Define recovery objectives and test system restoration.","NIST contingency planning","https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final","documentation"]]],
     ["Documentation and Change Engineering","Manage design changes and technical records","Produce engineering documentation and controlled change plans.",[["change","Change Engineering","Assess change impact, validation, and rollback.","Google SRE release engineering","https://sre.google/sre-book/release-engineering/","documentation"],["docs","Technical Documentation","Write architecture and operational documentation for maintainers.","Diataxis framework","https://diataxis.fr/","article"],["configuration","Configuration Records","Track system baselines and approved variations.","NIST configuration management","https://csrc.nist.gov/pubs/sp/800/128/upd1/final","documentation"]]],
     ["Systems Engineering Capstone","Deliver an integrated system engineering portfolio","Publish requirements, architecture, integration automation, capacity analysis, reliability plan, lifecycle decisions, and change documentation.",[["cap-design","Requirements and Design","Deliver traceable requirements and system architecture diagrams.","NASA systems engineering handbook","https://www.nasa.gov/reference/systems-engineering-handbook/","documentation"],["cap-integrate","Integration and Automation","Demonstrate a safe, repeatable integration workflow.","Ansible documentation","https://docs.ansible.com/ansible/latest/","documentation"],["cap-lifecycle","Reliability and Lifecycle Plan","Present performance assumptions, recovery, change, and lifecycle records.","NIST systems engineering","https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final","documentation"]]]
   ]],
@@ -523,6 +556,7 @@ Object.entries(batch9Roles).forEach(([role, [description, prefix, stages]]) => {
 });
 
 // Batch 10 adds distinct design, user research, and product roles.
+const batch10Roles = {
   "UX Designer": ["Shapes end-to-end user experiences by framing user needs, mapping journeys and information architecture, designing flows and wireframes, prototyping, testing usability, and iterating accessibly.", "ux-designer", [
     ["UX Foundations and Problem Framing", "Frame a user-centered experience problem", "Deliver a concise problem brief grounded in user goals, context, constraints, and observable evidence.", [["ux-designer-ux-needs","User Needs and Experience Problems","Separate user goals and unmet needs from proposed features and internal assumptions.","https://www.nngroup.com/articles/user-interviews/","article"],["ux-designer-ux-process","Human-Centered Design Process","Use iterative research, design, and evaluation to address people’s needs within real contexts.","https://www.iso.org/standard/77520.html","documentation"],["ux-designer-ux-access","Accessibility Foundations","Include accessibility and inclusive use in experience problem framing from the start.","https://www.w3.org/WAI/fundamentals/accessibility-intro/","documentation"]]],
     ["User Journeys and Experience Mapping", "Map an end-to-end user journey", "Deliver a journey map showing user goals, phases, touchpoints, pain points, and evidence-backed opportunities.", [["ux-designer-journey-map","Journey Mapping","Map the holistic steps and touchpoints a person moves through to accomplish a goal.","https://www.nngroup.com/articles/user-journeys-vs-user-flows/","article"],["ux-designer-service-blueprint","Service Blueprinting","Connect frontstage user experience to backstage processes and operational dependencies.","https://www.nngroup.com/articles/service-blueprints-definition/","article"],["ux-designer-journey-research","Journey Research and Evidence","Ground experience maps in user research, behavioral data, and validated service evidence.","https://design-system.service.gov.uk/get-started/","documentation"]]],
@@ -1420,7 +1454,7 @@ Object.assign(roadmaps, {
       ["Deployment and Model Optimization", "Prepare trained networks for a reliable inference workflow.", "Package a small neural model for inference", "Production deployment also requires consistent preprocessing, latency checks, and versioned artifacts.", ["Export or package a model", "Test inference outside training code", "Measure a simple latency baseline"], [
         ["inference", "Inference and Model Serving", "Separate evaluation and inference from training and define a stable input/output contract.", "Load a saved model in a clean process and compare its output with the training environment.", "Expose a local prediction endpoint and add smoke tests for shape and invalid input.", [["FastAPI Tutorial", "https://fastapi.tiangolo.com/tutorial/", "documentation"]]],
         ["onnx", "Model Interchange and ONNX", "Understand a portable model representation and check whether supported operators match deployment needs.", "Export a small model and validate output agreement on representative inputs.", "Compare the exported model’s predictions with the source framework and record differences.", [["ONNX: Tutorials", "https://onnx.ai/onnx/intro/python.html", "documentation"]]],
-        ["optimization", "Inference Optimization", "Measure and reason about batching, precision, quantization, and runtime tradeoffs before optimizing.", "Benchmark a fixed set of inputs and preserve a quality comparison with each optimization.", "Compare baseline and one optimized inference path for latency, size, and prediction agreement.", [["PyTorch: Performance Tuning Guide", "https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html", "documentation"]]]
+        ["serving-optimization", "Inference Optimization", "Measure and reason about batching, precision, quantization, and runtime tradeoffs before optimizing.", "Benchmark a fixed set of inputs and preserve a quality comparison with each optimization.", "Compare baseline and one optimized inference path for latency, size, and prediction agreement.", [["PyTorch: Performance Tuning Guide", "https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html", "documentation"]]]
       ]],
       ["Deep Learning Engineer Capstone", "Deliver a trained neural model with a reproducible workflow and usable inference interface.", "Build and serve a neural network application", "The capstone demonstrates architecture choice, controlled training, measured evaluation, and an inference handoff.", ["Select a manageable image or sequence task", "Train and compare a justified baseline", "Package inference and publish limitations and measurements"], [
         ["capstone-plan", "Task, Dataset, and Evaluation Plan", "Choose an appropriately scoped task, check dataset terms, and define metrics and split strategy before training.", "Write the evaluation protocol and inspect sample data before implementing a large model.", "Publish a brief describing data source, task, baseline, metric, and known limitations.", [["Kaggle Learn", "https://www.kaggle.com/learn", "course"]]],
@@ -2160,7 +2194,7 @@ Object.assign(roadmaps, {
       ]],
       ["Authentication and Access Control Testing", "Test identity and authorization behavior using bounded training labs.", "Complete guided identity security labs", "Identity flaws can expose accounts and data, so testing must verify both expected and prohibited behavior.", ["Test authentication cases", "Check authorization boundaries", "Capture minimal evidence"], [
         ["authentication", "Web Authentication Testing", "Assess login, password reset, session lifecycle, and MFA behavior against documented expectations.", "Use PortSwiggerâ€™s deliberately vulnerable Academy labs and avoid real accounts or live services.", "Complete a guided authentication lab and record the vulnerable behavior and defensive fix.", [["PortSwigger: Authentication", "https://portswigger.net/web-security/authentication", "interactive"]]],
-        ["authorization", "Access Control Testing", "Check whether users can access only permitted objects and functions using controlled lab identities.", "Use the labâ€™s supplied users and test only the authorized training application.", "Complete an access-control lab and write a role/object test matrix plus remediation idea.", [["PortSwigger: Access Control", "https://portswigger.net/web-security/access-control", "interactive"], ["OWASP Authorization Cheat Sheet", "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html", "documentation"]]],
+        ["access-control-testing", "Access Control Testing", "Check whether users can access only permitted objects and functions using controlled lab identities.", "Use the labâ€™s supplied users and test only the authorized training application.", "Complete an access-control lab and write a role/object test matrix plus remediation idea.", [["PortSwigger: Access Control", "https://portswigger.net/web-security/access-control", "interactive"], ["OWASP Authorization Cheat Sheet", "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html", "documentation"]]],
         ["sessions", "Session and Password Security", "Understand session tokens, expiration, cookie controls, password policy, and safe credential testing boundaries.", "Use synthetic credentials and lab accounts; never test passwords against accounts without explicit written authorization.", "Review cookie and session settings in a local training app and propose safe improvements.", [["OWASP Session Management Cheat Sheet", "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html", "documentation"], ["PortSwigger: Authentication", "https://portswigger.net/web-security/authentication", "interactive"]]]
       ]],
       ["Input Handling and Injection in Training Labs", "Recognize common input flaws and validate them only against deliberately vulnerable targets.", "Complete safe injection exercises", "Input-handling tests reveal whether applications separate data from commands and apply context-aware output handling.", ["Understand injection categories", "Use guided lab payloads only", "Connect findings to code fixes"], [
@@ -2361,6 +2395,34 @@ Object.assign(roadmaps, {
         ["capstone-report", "Forensic Report and Peer Review", "Communicate methods, findings, limitations, and conclusions with enough detail for an independent reviewer to follow the reasoning.", "Have a peer reproduce one artifact observation from the documented training dataset.", "Publish a sanitized forensic case report with custody record, hashes, evidence references, timeline, limitations, and appendix.", [["SWGDE Best Practices", "https://www.swgde.org/documents/", "documentation"], ["NIST SP 800-86", "https://csrc.nist.gov/pubs/sp/800/86/final", "documentation"]]]
       ]]
     ])
+  });
+
+  // Consolidate overfilled legacy stages into related skill groups without
+  // discarding their descriptions, practice guidance, or learning resources.
+  const mergeStageGroups = (role, stageIndex, groups) => {
+    const stage = roadmaps[role]?.stages?.[stageIndex];
+    if (stage) stage.skills = groups.map((indices) => combineSkills(indices.map((index) => stage.skills[index])));
+  };
+  mergeStageGroups("Data Scientist", 4, [[0], [1], [2, 3]]);
+  mergeStageGroups("Data Scientist", 7, [[0], [1, 2], [3]]);
+  mergeStageGroups("Data Analyst", 2, [[0], [1], [2, 3]]);
+
+  // Give the existing mobile curriculum its missing final portfolio stage.
+  roadmaps["Mobile App Developer"].stages.push({
+    title: "Mobile Portfolio and Release Capstone",
+    description: "Publish and validate a complete mobile application with clear release and portfolio evidence.",
+    mission: {
+      title: "Publish a tested mobile application portfolio",
+      description: "Deliver a substantial Android app with tested user journeys, accessible interactions, privacy-aware data handling, release notes, and reproducible setup instructions.",
+      why: "A finished portfolio project demonstrates that you can carry a mobile product from implementation through a responsible release handoff.",
+      tasks: ["Complete and test core user journeys", "Document privacy, accessibility, and release decisions", "Publish source, screenshots, and setup guidance"],
+      finalMilestone: "Mobile Application Portfolio Capstone"
+    },
+    skills: [
+      skill("mobile-capstone-quality", "Capstone Quality and Accessibility", "Verify key flows, UI states, accessibility, and error behavior in the completed application.", "Run repeatable checks on representative screen sizes and record results and unresolved limitations.", "Publish a test and accessibility review for the capstone app.", [resource("Android Testing Documentation", "https://developer.android.com/training/testing", "documentation")]),
+      skill("mobile-capstone-release", "Capstone Build and Release", "Prepare a reproducible build and explain signing, release configuration, and distribution readiness.", "Follow platform guidance and keep credentials and signing material out of source control.", "Provide a release checklist and build instructions for the project.", [resource("Android App Release Preparation", "https://developer.android.com/studio/publish", "documentation")]),
+      skill("mobile-capstone-portfolio", "Capstone Portfolio Handoff", "Present the app's purpose, architecture, implementation, evidence, and known limitations for review.", "Ask a peer to follow the project setup and walkthrough using only the published documentation.", "Publish source, screenshots, architecture notes, test evidence, and a concise demo walkthrough.", [resource("Android Developer Documentation", "https://developer.android.com/docs", "documentation")])
+    ]
   });
 
   // Keep the original curriculum rows concise while giving each skill a small,

@@ -32,22 +32,22 @@ if (onboardingForm) {
       "Software & Web Development": ["Frontend Developer", "Backend Developer", "Full-Stack Developer", "Software Engineer", "Web Developer", "Application Developer", "API Developer"],
       "Mobile App Development": ["Android Developer", "iOS Developer", "Flutter Developer", "React Native Developer", "Mobile App Developer"],
       "AI & Machine Learning": ["AI Engineer", "Machine Learning Engineer", "AI/ML Engineer", "Deep Learning Engineer", "Generative AI Engineer", "NLP Engineer", "Computer Vision Engineer", "AI Research Engineer"],
-      "Data Engineering & Analytics": ["Data Analyst", "Data Scientist", "Data Engineer", "Analytics Engineer", "BI Analyst", "BI Developer", "Data Architect"],
       Cybersecurity: ["Cybersecurity Analyst", "Cybersecurity Engineer", "Security Analyst", "Security Engineer", "SOC Analyst", "Penetration Tester", "Ethical Hacker", "Application Security Engineer", "Cloud Security Engineer", "Security Architect", "Digital Forensics Analyst"],
       "Cloud & DevOps": ["Cloud / DevOps Engineer", "Cloud Engineer", "Cloud Architect", "Cloud Developer", "DevOps Engineer", "DevSecOps Engineer", "Site Reliability Engineer", "Platform Engineer", "Infrastructure Engineer"],
       "Networking & Infrastructure": ["Network Engineer", "Network Administrator", "Network Architect", "Systems Administrator", "Systems Engineer", "IT Support Engineer"],
       "Blockchain & Web3": ["Blockchain Developer", "Blockchain Engineer", "Smart Contract Developer", "Web3 Developer", "Solidity Developer"],
-      "Game Development": ["Game Developer", "Game Programmer", "Unity Developer", "Unreal Engine Developer", "Gameplay Programmer"],
-      "Testing & Quality Engineering": ["QA Engineer", "QA Analyst", "Software Test Engineer", "Automation Test Engineer", "SDET", "Performance Test Engineer"],
-      "Embedded & IoT": ["Embedded Systems Engineer", "Embedded Software Engineer", "IoT Engineer", "IoT Developer", "Firmware Engineer", "Robotics Software Engineer"],
-      "Emerging Technologies": ["AR/VR Developer", "XR Developer", "Robotics Engineer", "Computer Vision Engineer", "Quantum Computing Researcher"]
+      "Game Development": ["Game Developer", "Unity Developer", "Unreal Engine Developer", "Gameplay Programmer", "Game Designer", "Technical Artist"],
+      "Testing & Quality Engineering": ["QA Engineer", "SDET", "Performance Test Engineer", "QA Lead", "Test Automation Engineer"],
+      "Embedded & IoT": ["Embedded Systems Engineer", "Embedded Software Engineer", "IoT Engineer", "Firmware Engineer", "Robotics Software Engineer"],
+      "Emerging Technologies": ["AR/VR Developer", "Robotics Engineer", "Quantum Computing Researcher"],
+      "Autonomous Systems": ["Autonomous Systems Engineer"]
     },
-    Data: { "Data Analytics": ["Data Analyst"], "Data Science": ["Data Scientist"], "Data Engineering": ["Data Engineer"], "Business Intelligence": ["BI Analyst", "BI Developer"] },
-    Design: { "UI/UX Design": ["UI Designer", "UX Designer", "UX Researcher"], "Visual Design": ["Visual Designer"], "Product Design": ["Product Designer"] },
-    Product: { "Product Management": ["Product Manager", "Associate Product Manager", "Product Analyst"], "Product Operations": ["Product Operations Associate"] },
-    Marketing: { "Digital Marketing": ["Digital Marketing Specialist", "SEO Specialist"], "Content Marketing": ["Content Strategist"], "Growth Marketing": ["Growth Marketer", "Social Media Manager"], "Brand Marketing": ["Brand Manager"] },
-    Business: { "Business Analysis": ["Business Analyst"], Consulting: ["Business Consultant"], Operations: ["Operations Analyst"], Sales: ["Sales Executive", "Business Development Executive"] }
+    Data: { "Data Analytics": ["Data Analyst"], "Data Science": ["Data Scientist"], "Data Engineering": ["Data Engineer", "Analytics Engineer", "Data Architect"], "Business Intelligence": ["BI Analyst", "BI Developer"] },
+    Design: { "UI/UX Design": ["UI Designer", "UX Designer", "UX Researcher", "Interaction Designer"], "Visual Design": ["Visual Designer"], "Product Design": ["Product Designer", "Design Systems Designer"] },
+    Product: { "Product Management": ["Product Manager", "Product Owner"] },
+    Marketing: { "Digital Marketing": ["Digital Marketing Specialist", "SEO Specialist"], "Content Marketing": ["Content Strategist"], "Growth Marketing": ["Growth Marketer", "Social Media Manager"], "Brand Marketing": ["Brand Manager"] }
   };
+  window.careersByDomain = careersByDomain;
 
   function resetRoles() {
     roleSelect.innerHTML = '<option value="">Select a career track first</option>';
@@ -123,11 +123,8 @@ if (dashboardPage) {
     const roadmapProgressByRole = Object.prototype.hasOwnProperty.call(storedRoadmapProgress, "completed") || Object.prototype.hasOwnProperty.call(storedRoadmapProgress, "total")
       ? { "Full-Stack Developer": storedRoadmapProgress }
       : storedRoadmapProgress;
-    const roadmapProgress = roadmapProgressByRole[targetRole] || defaultRoadmapProgress;
-
     // Save defaults once, so future pages can update the same progress values.
     localStorage.setItem("careerProgress", JSON.stringify(careerProgress));
-    localStorage.setItem("roadmapProgress", JSON.stringify(roadmapProgressByRole));
 
     const getRoleStatuses = (key) => {
       const stored = JSON.parse(localStorage.getItem(key)) || {};
@@ -135,8 +132,13 @@ if (dashboardPage) {
       if (isRoleScoped) return stored[targetRole] || {};
       return targetRole === "Full-Stack Developer" ? stored : {};
     };
-    const skillStatuses = getRoleStatuses("roadmapSkillStatus");
+    const skillStatuses = window.roadmapProgress.readSkillStatusesByRole()[targetRole] || {};
     const missionStatuses = getRoleStatuses("roadmapMissionStatus");
+    const roadmapProgress = hasSelectedRoadmap
+      ? window.roadmapProgress.calculateProgress(selectedRoadmap, skillStatuses, missionStatuses)
+      : roadmapProgressByRole[targetRole] || defaultRoadmapProgress;
+    if (hasSelectedRoadmap) roadmapProgressByRole[targetRole] = roadmapProgress;
+    localStorage.setItem("roadmapProgress", JSON.stringify(roadmapProgressByRole));
 
     const getPercentage = (value) => {
       if (value === null || value === undefined || value === "") return null;
